@@ -1,31 +1,38 @@
+
 import { useEffect, useState } from 'react';
 import ProductCard from './components/product-card';
+import RandomProduct from './components/random-product';
 
 const BASE_URL = 'https://fakestoreapi.com';
 
 function App() {
-	// fetch data using useEffect hook
+    const [products, setProducts] = useState([]);
 
-	const [products, setProducts] = useState([]);
+    useEffect(() => {
+        fetch(`${BASE_URL}/products`)
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                return res.json();
+            })
+            .then((data) => setProducts(data))
+            .catch((error) => console.error(error));
+    }, []);
 
-	useEffect(() => {
-		// fetch from https://fakestoreapi.com/products
-		// default behaviour of fetch is GET
+    return (
+        <div className="min-h-screen p-5">
+            <RandomProduct />
 
-		fetch(`${BASE_URL}/products`)
-			.then((res) => res.json())
-			.then((data) => setProducts(data));
-	}, []);
+            <h2 className="my-6 text-2xl font-bold">All Products</h2>
 
-	return (
-		<div className="h-screen p-5">
-			<div className="grid grid-cols-2 xl:grid-cols-4 gap-5">
-				{products.map((product) => (
-					<ProductCard {...product} key={product.id} />
-				))}
-			</div>
-		</div>
-	);
+            <div className="grid grid-cols-2 gap-5 xl:grid-cols-4">
+                {products.map((product) => (
+                    <ProductCard {...product} key={product.id} />
+                ))}
+            </div>
+        </div>
+    );
 }
 
 export default App;
